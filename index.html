@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トレーニングメニュー</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+  :root {
+    --bg:#0a0a0a;--surface:#141414;--card:#1a1a1a;--border:#2a2a2a;
+    --accent:#e8ff00;--accent2:#ff4d00;--text:#f0f0f0;--muted:#666;
+    --wu:#2a3a2a;--wu-t:#7dff7d;--hy:#1a2a3a;--hy-t:#7dc8ff;
+    --ne:#3a1a1a;--ne-t:#ff7d7d;--en:#2a2a1a;--en-t:#ffd97d;
+    --sl:#1a2a1a;--sl-t:#aaffaa;
+    --ca:#1a1a3a;--ca-t:#c07dff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;padding-bottom:40px;}
+  header{background:linear-gradient(135deg,#0a0a0a,#1a1a0a);padding:20px 16px 16px;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:200;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--accent);line-height:1;}
+  header p{font-size:10px;color:var(--muted);margin-top:3px;}
+  .week-switch{display:flex;margin:12px 16px 0;gap:8px;}
+  .ws-btn{flex:1;padding:10px;border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid var(--border);background:var(--surface);}
+  .ws-btn.active{background:var(--accent);border-color:var(--accent);}
+  .ws-btn .ws-num{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:var(--muted);}
+  .ws-btn.active .ws-num{color:#000;}
+  .ws-btn .ws-label{font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;}
+  .ws-btn.active .ws-label{color:#000;}
+  .week-bar{display:flex;gap:4px;margin:10px 16px 0;}
+  .day-chip{flex:1;padding:7px 2px;border-radius:7px;text-align:center;}
+  .day-chip.on{background:var(--accent);color:#000;}
+  .day-chip.off{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+  .day-chip .dn{font-family:'Bebas Neue',sans-serif;font-size:15px;line-height:1;display:block;}
+  .day-chip .dp{font-size:8px;margin-top:1px;display:block;font-weight:700;line-height:1.2;}
+  .goal-bar{background:var(--surface);margin:10px 16px 0;border-radius:10px;padding:10px 16px;border:1px solid var(--border);display:flex;justify-content:space-around;}
+  .goal-item{text-align:center;}
+  .goal-item .val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);line-height:1;}
+  .goal-item .label{font-size:9px;color:var(--muted);margin-top:1px;}
+  .g-div{width:1px;background:var(--border);}
+  .legend{display:flex;gap:6px;flex-wrap:wrap;margin:10px 16px 0;}
+  .legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);}
+  .legend-dot{width:8px;height:8px;border-radius:2px;}
+  .week-content{display:none;}
+  .week-content.active{display:block;}
+  .tabs{display:flex;margin:10px 16px 0;gap:5px;}
+  .tab{flex:1;padding:8px 2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:10px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;font-family:'Noto Sans JP',sans-serif;line-height:1.4;}
+  .tab.active{background:var(--accent);color:#000;border-color:var(--accent);}
+  .tab-content{display:none;padding:14px 16px;}
+  .tab-content.active{display:block;}
+  .day-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
+  .eq-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+  .eq-badge{font-size:10px;padding:3px 7px;border-radius:20px;border:1px solid;font-weight:700;}
+  .eq-rack{border-color:#ff7d7d;color:#ff7d7d;}
+  .eq-cable{border-color:#7dc8ff;color:#7dc8ff;}
+  .eq-bench{border-color:#ffd97d;color:#ffd97d;}
+  .eq-cardio{border-color:#c07dff;color:#c07dff;}
+  .sec-div{display:flex;align-items:center;gap:8px;margin:14px 0 8px;}
+  .sec-line{flex:1;height:1px;background:var(--border);}
+  .sec-txt{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);}
+  .muscle-section{margin-bottom:14px;}
+  .muscle-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .muscle-tag{font-size:10px;font-weight:900;padding:3px 8px;border-radius:4px;}
+  .muscle-tag.rack{background:rgba(255,125,125,.15);color:#ff9d9d;border:1px solid rgba(255,125,125,.3);}
+  .muscle-tag.cable{background:rgba(125,200,255,.15);color:#9dc8ff;border:1px solid rgba(125,200,255,.3);}
+  .muscle-tag.bench{background:rgba(255,217,125,.15);color:#ffd97d;border:1px solid rgba(255,217,125,.3);}
+  .ex-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+  .ex-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .ex-name{font-size:13px;font-weight:900;color:var(--text);}
+  .eq-icon{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:700;flex-shrink:0;}
+  .eq-icon.rack{background:rgba(255,125,125,.2);color:#ff9d9d;}
+  .eq-icon.cable{background:rgba(125,200,255,.2);color:#9dc8ff;}
+  .eq-icon.bench{background:rgba(255,217,125,.2);color:#ffd97d;}
+  .ex-img-area{display:flex;align-items:stretch;border-bottom:1px solid var(--border);}
+  .ex-img-box{width:100px;min-height:80px;flex-shrink:0;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;border-right:1px solid var(--border);}
+  .ex-img-box .muscle-icon{font-size:28px;line-height:1;}
+  .ex-img-box .muscle-name{font-size:9px;color:var(--muted);text-align:center;padding:0 4px;line-height:1.3;}
+  .ex-info{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:3px;}
+  .ex-info-row{display:flex;align-items:flex-start;gap:6px;}
+  .ex-info-label{font-size:9px;color:var(--accent);font-weight:900;flex-shrink:0;min-width:36px;}
+  .ex-info-val{font-size:10px;color:var(--muted);line-height:1.5;}
+  .sets{padding:8px 10px;display:flex;flex-direction:column;gap:4px;}
+  .sr{display:grid;grid-template-columns:36px 1fr 65px 52px;align-items:center;gap:4px;padding:6px 8px;border-radius:6px;font-size:12px;}
+  .sr.wu{background:var(--wu);}
+  .sr.hy{background:var(--hy);}
+  .sr.ne{background:var(--ne);}
+  .sr.en{background:var(--en);}
+  .sr.sl{background:var(--sl);}
+  .sn{font-family:'Bebas Neue',sans-serif;font-size:15px;text-align:center;line-height:1;}
+  .sr.wu .sn{color:var(--wu-t);}
+  .sr.hy .sn{color:var(--hy-t);}
+  .sr.ne .sn{color:var(--ne-t);}
+  .sr.en .sn{color:var(--en-t);}
+  .sr.sl .sn{color:var(--sl-t);}
+  .sw{font-weight:900;font-size:12px;}
+  .sr.wu .sw{color:var(--wu-t);}
+  .sr.hy .sw{color:var(--hy-t);}
+  .sr.ne .sw{color:var(--ne-t);}
+  .sr.en .sw{color:var(--en-t);}
+  .sr.sl .sw{color:var(--sl-t);}
+  .srp{font-size:11px;color:var(--text);text-align:center;}
+  .spu{font-size:10px;color:var(--muted);text-align:right;}
+  .wu-note{font-size:10px;color:var(--muted);background:rgba(255,255,255,.03);border-radius:6px;padding:6px 10px;margin-bottom:8px;border-left:2px solid var(--wu-t);}
+  .cardio-card{background:linear-gradient(135deg,#0d0d1f,#1a1a3a);border:1px solid rgba(192,125,255,.3);border-radius:10px;padding:14px;margin-bottom:12px;}
+  .cardio-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ca-t);margin-bottom:10px;}
+  .cardio-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+  .cardio-stat{background:rgba(192,125,255,.1);border-radius:6px;padding:8px;text-align:center;}
+  .cv{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ca-t);line-height:1;}
+  .cl{font-size:10px;color:var(--muted);margin-top:2px;}
+  .cardio-note{font-size:11px;color:var(--muted);background:rgba(255,255,255,.03);border-radius:6px;padding:8px 10px;line-height:1.7;}
+  .info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
+  .info-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--accent);margin-bottom:10px;}
+  .n-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .n-item{background:var(--surface);border-radius:8px;padding:10px;text-align:center;}
+  .n-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);line-height:1;}
+  .n-label{font-size:10px;color:var(--muted);margin-top:3px;}
+  .meal-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .meal-row:last-child{border-bottom:none;}
+  .meal-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+  .meal-time{font-size:11px;color:var(--accent);font-weight:700;}
+  .meal-content{font-size:12px;color:var(--text);margin-top:2px;line-height:1.5;}
+  .meal-protein{font-size:10px;color:var(--muted);margin-top:2px;}
+  .total-box{margin-top:10px;padding:10px;background:rgba(232,255,0,.05);border-radius:8px;border:1px solid rgba(232,255,0,.15);}
+  .total-box .t1{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:3px;}
+  .total-box .t2{font-size:12px;color:var(--text);line-height:1.7;}
+  .cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+  .cmp-item{background:var(--surface);border-radius:8px;padding:10px;}
+  .cmp-item.hi{border:1px solid rgba(232,255,0,.3);}
+  .cmp-label{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+  .cmp-item.hi .cmp-label{color:var(--accent);}
+  .cmp-val{font-size:11px;color:var(--text);line-height:1.6;}
+  .adv{display:inline-block;background:rgba(232,255,0,.1);color:var(--accent);font-size:9px;padding:2px 5px;border-radius:3px;margin-top:3px;font-weight:700;}
+  .rec-box{margin-top:10px;padding:10px;background:rgba(232,255,0,.05);border-radius:8px;border:1px solid rgba(232,255,0,.15);}
+  .rec-title{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:4px;}
+  .rec-text{font-size:11px;color:var(--text);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TRAINING MENU</h1>
+  <p>166cm · 80kg台 · 目標：稲葉さんボディ（体脂肪8〜10%）</p>
+</header>
+
+<div class="week-switch">
+  <div class="ws-btn active" data-week="3">
+    <div class="ws-num">3</div>
+    <div class="ws-label">日 / 週（月水金）</div>
+  </div>
+  <div class="ws-btn" data-week="4">
+    <div class="ws-num">4</div>
+    <div class="ws-label">日 / 週（月火木金）</div>
+  </div>
+</div>
+
+<div id="cal3" class="week-bar">
+  <div class="day-chip on"><span class="dn">月</span><span class="dp">胸・三頭</span></div>
+  <div class="day-chip off"><span class="dn">火</span><span class="dp">REST</span></div>
+  <div class="day-chip on"><span class="dn">水</span><span class="dp">背・二頭</span></div>
+  <div class="day-chip off"><span class="dn">木</span><span class="dp">REST</span></div>
+  <div class="day-chip on"><span class="dn">金</span><span class="dp">脚・肩・腹</span></div>
+  <div class="day-chip off"><span class="dn">土</span><span class="dp">REST</span></div>
+  <div class="day-chip off"><span class="dn">日</span><span class="dp">REST</span></div>
+</div>
+<div id="cal4" class="week-bar" style="display:none">
+  <div class="day-chip on"><span class="dn">月</span><span class="dp">胸①三頭</span></div>
+  <div class="day-chip on"><span class="dn">火</span><span class="dp">背・二頭</span></div>
+  <div class="day-chip off"><span class="dn">水</span><span class="dp">REST</span></div>
+  <div class="day-chip on"><span class="dn">木</span><span class="dp">脚・腹</span></div>
+  <div class="day-chip on"><span class="dn">金</span><span class="dp">胸②肩</span></div>
+  <div class="day-chip off"><span class="dn">土</span><span class="dp">REST</span></div>
+  <div class="day-chip off"><span class="dn">日</span><span class="dp">REST</span></div>
+</div>
+
+<div class="goal-bar">
+  <div class="goal-item"><div class="val">1,950</div><div class="label">kcal/日</div></div>
+  <div class="g-div"></div>
+  <div class="goal-item"><div class="val">160g</div><div class="label">タンパク質</div></div>
+  <div class="g-div"></div>
+  <div class="goal-item"><div class="val">8〜10%</div><div class="label">目標体脂肪率</div></div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#2a3a2a;border:1px solid #7dff7d"></div>WU</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a2a3a;border:1px solid #7dc8ff"></div>筋肥大</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3a1a1a;border:1px solid #ff7d7d"></div>神経系</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2a2a1a;border:1px solid #ffd97d"></div>筋持久力</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a2a1a;border:1px solid #aaffaa"></div>遅筋（高レップ）</div>
+</div>
+
+<!-- ===== 週3 ===== -->
+<div id="week3" class="week-content active">
+  <div class="tabs">
+    <div class="tab active" data-id="w3mon" data-prefix="w3">月<br><span style="font-size:9px">胸・三頭</span></div>
+    <div class="tab" data-id="w3wed" data-prefix="w3">水<br><span style="font-size:9px">背・二頭</span></div>
+    <div class="tab" data-id="w3fri" data-prefix="w3">金<br><span style="font-size:9px">脚・肩・腹</span></div>
+    <div class="tab" data-id="w3meal" data-prefix="w3">食事<br><span style="font-size:9px">ロードマップ</span></div>
+  </div>
+
+  <!-- 月曜 -->
+  <div id="w3mon" class="tab-content active">
+    <div class="day-label">MONDAY — 胸・三頭筋</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-bench">ベンチ＋DB</span><span class="eq-badge eq-cable">ケーブル</span></div>
+    <div class="wu-note">💡 同部位が続く場合、2種目目以降のWUは省略可</div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">大胸筋全体</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルベンチプレス</div><div class="eq-icon rack">ラック+ベンチ</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🏋️</div><div class="muscle-name">大胸筋全体<br>三頭筋・前三角筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">グリップ</span><span class="ex-info-val">肩幅より拳1〜2個広め</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肩甲骨を寄せて胸を張る。腰は軽くアーチ。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">呼吸</span><span class="ex-info-val">下ろす時吸い・上げる時吐く</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">30kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">40kg</div><div class="srp">12回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">54kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">45kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">35kg</div><div class="srp">15〜20回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">BENCH + DUMBBELL</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">大胸筋全体・中部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ダンベルベンチプレス</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">💪</div><div class="muscle-name">大胸筋全体<br>可動域が広い</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">バーベルより深く下ろせる。肘を広げすぎない。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">20kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ダンベルフライ</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦅</div><div class="muscle-name">大胸筋中部<br>ストレッチ重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">弧を描くように。下ろした位置でストレッチを感じる。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">14kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">大胸筋内側・下部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ペックフライ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦋</div><div class="muscle-name">大胸筋内側<br>収縮重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">閉じた位置で1秒収縮。肘を軽く曲げたまま。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">20kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルクロスオーバー</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">✖️</div><div class="muscle-name">大胸筋下部<br>高位→低位</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">体幹をわずかに前傾。交差位置で収縮。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルプレスダウン（ロープ）</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">📐</div><div class="muscle-name">三頭筋外側頭<br>収縮重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を体側に固定。一番下でロープを左右に広げる。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">12kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">20kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">10kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">トライセップスオーバーヘッド</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">☝️</div><div class="muscle-name">三頭筋長頭<br>ストレッチ重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を頭の横に固定。肘だけを動かす。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">10kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">12kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦵</div><div class="muscle-name">腓腹筋・ヒラメ筋<br>毎回実施OK</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">段差を使って可動域を最大化。頂点で1秒止める。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす<br>プリケツ目的 → 傾斜キープ・速度4〜4.5kmに落とす</div>
+    </div>
+  </div>
+
+  <!-- 水曜 -->
+  <div id="w3wed" class="tab-content">
+    <div class="day-label">WEDNESDAY — 背中・二頭筋</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-cable">ケーブル</span><span class="eq-badge eq-bench">ベンチ＋DB</span></div>
+    <div class="wu-note">💡 同部位が続く場合、2種目目以降のWUは省略可</div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">広背筋・僧帽筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">チンニング（懸垂）</div><div class="eq-icon rack">ラック</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🧗</div><div class="muscle-name">広背筋・僧帽筋<br>上腕二頭筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肩甲骨を下げながら引く。顎をバーの上まで。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">注意</span><span class="ex-info-val">反動を使わず、降ろす時もゆっくり。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">自重</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">3</div><div class="sw">+5kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">+5kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">自重</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">バックエクステンション</div><div class="eq-icon rack">ラック</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🔙</div><div class="muscle-name">脊柱起立筋<br>臀筋・ハム</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">背中まっすぐ保ったまま上体を起こす。水平が目安。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">5kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">10kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">広背筋・菱形筋・僧帽筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ラットプルダウン</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">⬇️</div><div class="muscle-name">広背筋メイン<br>僧帽筋下部</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を体側に引きつけるイメージ。胸を張って引く。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">40kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">50kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">25kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルロウ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🚣</div><div class="muscle-name">広背筋・菱形筋<br>僧帽筋中部</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を体側に引き、肩甲骨を最大限寄せる。反動を使わない。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">32kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">20kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">フェイスプル</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🎯</div><div class="muscle-name">三角筋後部<br>僧帽筋・回旋筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を肩より高く上げながら顔に向けて引く。肩の外旋を意識。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルロープハンマーカール</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🔨</div><div class="muscle-name">上腕二頭筋<br>腕橈骨筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を固定して前腕だけを動かす。肩を揺らさない。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">8kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">BENCH + DUMBBELL</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">上腕二頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">インクラインダンベルカール</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">💪</div><div class="muscle-name">二頭筋長頭<br>完全ストレッチ</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">角度</span><span class="ex-info-val">ベンチ45〜60°。腕が後ろに垂れることで長頭が最大ストレッチ。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">12kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす</div>
+    </div>
+  </div>
+
+  <!-- 金曜 -->
+  <div id="w3fri" class="tab-content">
+    <div class="day-label">FRIDAY — 脚・肩・腹筋</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-rack">スミスマシン</span><span class="eq-badge eq-cable">ケーブル</span><span class="eq-badge eq-bench">ベンチ＋DB</span></div>
+    <div class="wu-note">💡 同部位が続く場合、2種目目以降のWUは省略可</div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">大腿四頭筋・大臀筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルスクワット</div><div class="eq-icon rack">ラック</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🏔️</div><div class="muscle-name">大腿四頭筋<br>大臀筋・ハム</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">フォーム</span><span class="ex-info-val">ローバー・ワイドスタンス・パラレル以下</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">深くしゃがむほど大臀筋への刺激が増す</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">55kg</div><div class="srp">12回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">65kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">67kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">55kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">45kg</div><div class="srp">15〜20回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER / MACHINE</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">大腿四頭筋・臀部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ハックスクワット</div><div class="eq-icon cable">マシン</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦿</div><div class="muscle-name">大腿四頭筋<br>膝関節集中</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">足位置</span><span class="ex-info-val">低め→四頭筋・高め→臀筋強調</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">30kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">レッグプレス</div><div class="eq-icon cable">マシン</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦶</div><div class="muscle-name">大腿四頭筋<br>大臀筋・ハム</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">足位置</span><span class="ex-info-val">高め・広めにすると臀筋・ハムに効く</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">80kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">100kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">100kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">50kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルクランチ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🎗️</div><div class="muscle-name">腹直筋<br>重りで強化</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">お腹を丸めて収縮。股関節ではなく背中を曲げる。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">10kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">20kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">SMITH MACHINE → BENCH + DUMBBELL</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">三角筋前・中部（高重量メイン）</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">スミスマシンショルダープレス</div><div class="eq-icon rack">スミス</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🔱</div><div class="muscle-name">三角筋前・中部<br>高重量・神経系</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">バーを耳の横〜顎の前を通して押し上げる</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">注意</span><span class="ex-info-val">腰を反りすぎない。肘ロックしない。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">利点</span><span class="ex-info-val">軌道が固定されDBより高重量を扱いやすい</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">20kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">30kg</div><div class="srp">10回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">45kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">三角筋・腹直筋下部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ダンベルショルダープレス</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🏹</div><div class="muscle-name">三角筋前・中部<br>可動域・安定筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘を45°に保つ。真上に押す。肘ロックしない。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">スミスとの違い</span><span class="ex-info-val">軌道が自由なので安定筋も同時に鍛えられる</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">サイドレイズ</div><div class="eq-icon bench">DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦅</div><div class="muscle-name">三角筋中部<br>肩幅を作る</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">小指側を少し上げるイメージ。肩より上に上げない。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">8kg×2</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">レッグレイズ</div><div class="eq-icon bench">ベンチ</div></div>
+        <div class="sets">
+          <div class="sr en"><div class="sn">1〜3</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす</div>
+    </div>
+  </div>
+
+  <!-- 食事 -->
+  <div id="w3meal" class="tab-content">
+    <div class="info-card">
+      <div class="info-title">DAILY NUTRITION</div>
+      <div class="n-grid">
+        <div class="n-item"><div class="n-val">1,950</div><div class="n-label">カロリー (kcal)</div></div>
+        <div class="n-item"><div class="n-val">160g</div><div class="n-label">タンパク質目標</div></div>
+        <div class="n-item"><div class="n-val">55g</div><div class="n-label">脂質</div></div>
+        <div class="n-item"><div class="n-val">190g</div><div class="n-label">炭水化物</div></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-title">MEAL PLAN</div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">朝食</div><div class="meal-content">オートミール70g・卵1個・ソイプロテイン1杯（40gP）</div><div class="meal-protein">タンパク質：約55g</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">昼食</div><div class="meal-content">オートミール50g・納豆1パック・豆腐100g<br>※鶏胸肉or豚もも肉50g（ある日のみ）</div><div class="meal-protein">タンパク質：約20〜32g</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#ff4d00"></div><div><div class="meal-time">トレーニング後（運動日のみ）</div><div class="meal-content">ソイプロテイン1杯（40gP）・バナナ1本</div><div class="meal-protein">タンパク質：約41g</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">夕食</div><div class="meal-content">白米 or オートミール・ブロッコリー・味噌汁<br>※鶏胸肉or豚もも肉50g（ある日のみ）</div><div class="meal-protein">タンパク質：約8〜20g</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#c07dff"></div><div><div class="meal-time">就寝前</div><div class="meal-content">ソイプロテイン1杯（40gP）</div><div class="meal-protein">タンパク質：約40g｜就寝中の筋肉分解を防ぐ</div></div></div>
+      <div class="total-box"><div class="t1">1日合計</div><div class="t2">プロテイン3杯：120g｜食事：約40g｜合計：約160g ✓</div></div>
+    </div>
+    <div class="info-card">
+      <div class="info-title">ROADMAP</div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">4月〜6月末（12週）</div><div class="meal-content">8〜10kg減 → 70〜72kg</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">7月〜9月</div><div class="meal-content">5〜7kg減 → 65kg前後・体型確認</div></div></div>
+      <div class="meal-row"><div class="meal-dot" style="background:#e8ff00"></div><div><div class="meal-time">10月以降</div><div class="meal-content">60kg前後・体脂肪8〜10%・稲葉さんボディ到達</div></div></div>
+    </div>
+  </div>
+</div><!-- /week3 -->
+
+<!-- ===== 週4 ===== -->
+<div id="week4" class="week-content">
+  <div class="tabs">
+    <div class="tab active" data-id="w4mon" data-prefix="w4">月<br><span style="font-size:9px">胸①三頭</span></div>
+    <div class="tab" data-id="w4tue" data-prefix="w4">火<br><span style="font-size:9px">背・二頭</span></div>
+    <div class="tab" data-id="w4thu" data-prefix="w4">木<br><span style="font-size:9px">脚・腹</span></div>
+    <div class="tab" data-id="w4fri" data-prefix="w4">金<br><span style="font-size:9px">胸②・肩</span></div>
+    <div class="tab" data-id="w4cmp" data-prefix="w4">比較<br><span style="font-size:9px">週3 vs 4</span></div>
+  </div>
+
+  <!-- 月曜（週4）-->
+  <div id="w4mon" class="tab-content active">
+    <div class="day-label">MONDAY — 胸①・三頭筋</div>
+    <div style="padding:10px;background:rgba(232,255,0,.05);border-radius:8px;border:1px solid rgba(232,255,0,.15);margin-bottom:10px;font-size:11px;color:var(--muted);">週3の月曜と同一メニュー。金曜の胸②と合わせて週2回で胸を強化。</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-bench">ベンチ＋DB</span><span class="eq-badge eq-cable">ケーブル</span></div>
+    <div class="wu-note">💡 ペックフライ・プレスダウンの最終セットに遅筋（20〜30回）を追加</div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">大胸筋全体</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルベンチプレス</div><div class="eq-icon rack">ラック+ベンチ</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">30kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">40kg</div><div class="srp">12回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">54kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">45kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">35kg</div><div class="srp">15〜20回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">BENCH + DUMBBELL</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">大胸筋全体・中部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ダンベルベンチプレス</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">20kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ダンベルフライ</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">14kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">大胸筋・三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ペックフライ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">20kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルクロスオーバー</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルプレスダウン（ロープ）</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">12kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">20kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">4</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr sl"><div class="sn">5</div><div class="sw">10kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">トライセップスオーバーヘッド</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">10kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">12kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす</div>
+    </div>
+  </div>
+
+  <!-- 火曜（週4）-->
+  <div id="w4tue" class="tab-content">
+    <div class="day-label">TUESDAY — 背中・二頭筋</div>
+    <div style="padding:10px;background:rgba(232,255,0,.05);border-radius:8px;border:1px solid rgba(232,255,0,.15);margin-bottom:10px;font-size:11px;color:var(--muted);">週3の水曜と同一メニューです。ラットプルダウン・ケーブルロウに遅筋セット追加済み。</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-cable">ケーブル</span><span class="eq-badge eq-bench">ベンチ＋DB</span></div>
+    <div class="wu-note">💡 ラットプルダウン・ケーブルロウの最終セットに遅筋（20〜30回）を追加</div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">広背筋・僧帽筋・脊柱起立筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">チンニング（懸垂）</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">自重</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">3</div><div class="sw">+5kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">+5kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">自重</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">バックエクステンション</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">5kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">10kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">広背筋・菱形筋・二頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ラットプルダウン</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">40kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">50kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">25kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルロウ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">32kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">20kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">フェイスプル</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">ケーブルロープハンマーカール</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">8kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">BENCH + DUMBBELL</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">上腕二頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">インクラインダンベルカール</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">12kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">12kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす</div>
+    </div>
+  </div>
+
+  <!-- 木曜：脚・腹筋 -->
+  <div id="w4thu" class="tab-content">
+    <div class="day-label">THURSDAY — 脚・腹筋</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-cable">ケーブル</span><span class="eq-badge eq-bench">ベンチ</span></div>
+    <div class="wu-note">💡 新構成：脚＋腹筋の組み合わせ。腹筋は脚トレ後に実施。</div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">POWER RACK</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">大腿四頭筋・大臀筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルスクワット</div><div class="eq-icon rack">ラック</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🏔️</div><div class="muscle-name">大腿四頭筋<br>大臀筋・ハム</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">フォーム</span><span class="ex-info-val">ローバー・ワイドスタンス・パラレル以下</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">深くしゃがむほど大臀筋への刺激が増す</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">55kg</div><div class="srp">12回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">65kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">67kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">55kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr en"><div class="sn">6</div><div class="sw">45kg</div><div class="srp">15〜20回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER / MACHINE</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">ハムストリングス（週4追加・RDLから変更）</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">レッグカール（マシン）</div><div class="eq-icon cable">マシン</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦵</div><div class="muscle-name">ハムストリングス<br>単関節・安全</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">膝を完全に曲げきるところまで引く。反動を使わない。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ネガティブ</span><span class="ex-info-val">戻す動作（ネガティブ）をゆっくり3秒かけて行うと効果UP</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">遅筋</span><span class="ex-info-val">最終セットは軽重量で20〜30回</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">20kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">45kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">45kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">5</div><div class="sw">25kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">大腿四頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ハックスクワット</div><div class="eq-icon cable">マシン</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">70kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">30kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">レッグプレス</div><div class="eq-icon cable">マシン</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">80kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">100kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">100kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">4</div><div class="sw">50kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">20〜30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">脚の日はきつければ20分に短縮してもOK｜継続優先</div>
+    </div>
+
+    <!-- 腹筋（木曜追加）-->
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">ABS</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">腹直筋（部位変わるためWU推奨）</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ケーブルクランチ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🎗️</div><div class="muscle-name">腹直筋<br>重りで強化</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">お腹を丸めるように収縮。股関節でなく背中を曲げる。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">10kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">20kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">20kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">腹直筋下部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">レッグレイズ</div><div class="eq-icon bench">ベンチ</div></div>
+        <div class="sets">
+          <div class="sr en"><div class="sn">1〜3</div><div class="sw">自重</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">腹斜筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ツイストクランチ</div><div class="eq-icon bench">自重</div></div>
+        <div class="sets">
+          <div class="sr en"><div class="sn">1〜3</div><div class="sw">自重</div><div class="srp">左右20回</div><div class="spu">筋持久力</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 金曜：胸②・肩 -->
+  <div id="w4fri" class="tab-content">
+    <div class="day-label">FRIDAY — 胸②・肩（胸は週2回目）</div>
+    <div class="eq-badges"><span class="eq-badge eq-rack">パワーラック</span><span class="eq-badge eq-rack">スミスマシン</span><span class="eq-badge eq-bench">ベンチ＋DB</span><span class="eq-badge eq-cable">ケーブル</span></div>
+    <div class="wu-note">💡 胸②はストレッチ・パンプ重視。月曜の高重量と組み合わせて週2回胸を強化。</div>
+
+    <!-- 胸② -->
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CHEST② — ストレッチ・パンプ重視</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">大胸筋全体</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ダンベルベンチプレス</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">💪</div><div class="muscle-name">大胸筋全体<br>可動域重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">月との違い</span><span class="ex-info-val">バーベルより可動域が広い。ストレッチを意識。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">胸の伸びを感じながら下ろす。重量より可動域優先。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">15kg×2</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">18kg×2</div><div class="srp">12回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">20kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">22kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">大胸筋中部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">インクラインダンベルフライ</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🦅</div><div class="muscle-name">大胸筋上部・中部<br>ストレッチ重視</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">角度</span><span class="ex-info-val">ベンチを30〜45°に傾ける</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">上部大胸筋に刺激。月曜の平フライと刺激を変える。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">14kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">14kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">大胸筋内側・下部</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ケーブルクロスオーバー</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr sl"><div class="sn">3</div><div class="sw">10kg</div><div class="srp">20〜30回</div><div class="spu">遅筋</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 肩セクション -->
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">SHOULDER — スミス→DB→ケーブル</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">三角筋前・中部（高重量メイン）</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">スミスマシンショルダープレス</div><div class="eq-icon rack">スミス</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🔱</div><div class="muscle-name">三角筋前・中部<br>高重量・神経系</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">バーを耳の横〜顎の前を通して押し上げる</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">注意</span><span class="ex-info-val">腰を反りすぎない。肘ロックしない。</span></div>
+            <div class="ex-info-row"><span class="ex-info-label">週4</span><span class="ex-info-val">肩集中日のため重量・セット数を増やす</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU1</div><div class="sw">20kg</div><div class="srp">15回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr wu"><div class="sn">WU2</div><div class="sw">30kg</div><div class="srp">10回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">40kg</div><div class="srp">8回</div><div class="spu">筋肥大</div></div>
+          <div class="sr ne"><div class="sn">4</div><div class="sw">45kg</div><div class="srp">3〜5回</div><div class="spu">神経系</div></div>
+          <div class="sr hy"><div class="sn">5</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">6</div><div class="sw">35kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag bench">三角筋前・中部（可動域・安定筋）</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ダンベルショルダープレス</div><div class="eq-icon bench">ベンチ+DB</div></div>
+        <div class="ex-img-area">
+          <div class="ex-img-box"><div class="muscle-icon">🏹</div><div class="muscle-name">三角筋前・中部<br>可動域・安定筋</div></div>
+          <div class="ex-info">
+            <div class="ex-info-row"><span class="ex-info-label">ポイント</span><span class="ex-info-val">肘45°。真上に押す。スミスより可動域が広い。</span></div>
+          </div>
+        </div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">12kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">15kg×2</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">サイドレイズ</div><div class="eq-icon bench">DB</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">8kg×2</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">10kg×2</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">FUNCTIONAL TRAINER</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag cable">三角筋前部・後部・腹直筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">ケーブルフロントレイズ</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">8kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">10kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">10kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+      <div class="ex-card" style="margin-top:8px">
+        <div class="ex-header"><div class="ex-name">フェイスプル（4セット）</div><div class="eq-icon cable">ケーブル</div></div>
+        <div class="sets">
+          <div class="sr hy"><div class="sn">1</div><div class="sw">15kg</div><div class="srp">15回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">2</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">17kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CALF（毎回実施）</div><div class="sec-line"></div></div>
+    <div class="muscle-section">
+      <div class="muscle-header"><div class="muscle-tag rack">下腿三頭筋</div></div>
+      <div class="ex-card">
+        <div class="ex-header"><div class="ex-name">バーベルカーフレイズ</div><div class="eq-icon rack">ラック</div></div>
+        <div class="sets">
+          <div class="sr wu"><div class="sn">WU</div><div class="sw">30kg</div><div class="srp">20回</div><div class="spu">ウォームアップ</div></div>
+          <div class="sr en"><div class="sn">2</div><div class="sw">40kg</div><div class="srp">15回</div><div class="spu">筋持久力</div></div>
+          <div class="sr hy"><div class="sn">3</div><div class="sw">50kg</div><div class="srp">12回</div><div class="spu">筋肥大</div></div>
+          <div class="sr hy"><div class="sn">4</div><div class="sw">60kg</div><div class="srp">10回</div><div class="spu">筋肥大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><div class="sec-line"></div><div class="sec-txt">CARDIO</div><div class="sec-line"></div></div>
+    <div class="cardio-card">
+      <div class="cardio-title">インクラインウォーキング</div>
+      <div class="cardio-grid">
+        <div class="cardio-stat"><div class="cv">12〜15°</div><div class="cl">傾斜</div></div>
+        <div class="cardio-stat"><div class="cv">5.5km</div><div class="cl">時速</div></div>
+        <div class="cardio-stat"><div class="cv">30分</div><div class="cl">時間</div></div>
+      </div>
+      <div class="cardio-note">心拍数140台 → そのままOK｜150超 → 傾斜を先に落とす</div>
+    </div>
+  </div>
+
+  <!-- 比較 -->
+  <div id="w4cmp" class="tab-content">
+    <div class="info-card">
+      <div class="info-title">週3 vs 週4 比較</div>
+      <div class="cmp-row">
+        <div class="cmp-item"><div class="cmp-label">週3（月水金）</div><div class="cmp-val">トレ日：3日｜休息：4日<br>1回：約90〜100分<br>胸：週1回</div></div>
+        <div class="cmp-item hi"><div class="cmp-label">週4（月火木金）</div><div class="cmp-val">トレ日：4日｜休息：3日<br>1回：約70〜80分<br>胸：週2回</div><div class="adv">胸を週2回鍛えられる</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-item"><div class="cmp-label">週3の分割</div><div class="cmp-val">月：胸＋三頭<br>水：背＋二頭<br>金：脚＋肩＋腹</div></div>
+        <div class="cmp-item hi"><div class="cmp-label">週4の分割</div><div class="cmp-val">月：胸①＋三頭<br>火：背＋二頭<br>木：脚＋腹<br>金：胸②＋肩</div><div class="adv">各部位を集中して鍛えられる</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-item"><div class="cmp-label">週3の課題</div><div class="cmp-val">胸が週1回のみ。金曜が脚＋肩＋腹で疲労蓄積しやすい。</div></div>
+        <div class="cmp-item hi"><div class="cmp-label">週4の強み</div><div class="cmp-val">胸①（高重量・神経系）＋胸②（ストレッチ・パンプ）で刺激の種類が増える。胸の間隔は中3日で回復も十分。</div><div class="adv">稲葉さんボディへの最速ルート</div></div>
+      </div>
+      <div class="rec-box">
+        <div class="rec-title">推奨移行プラン</div>
+        <div class="rec-text">まず週3で1〜2ヶ月継続 → 慣れてきたら週4に移行<br><span style="color:var(--muted);font-size:11px">週4は土日REST固定・胸中3日間隔（月→金）で無理のない設計</span></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /week4 -->
+
+<script>
+  function switchWeek(num, el) {
+    document.querySelectorAll('.week-content').forEach(function(e){ e.classList.remove('active'); });
+    document.querySelectorAll('.ws-btn').forEach(function(e){ e.classList.remove('active'); });
+    document.getElementById('week' + num).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('cal3').style.display = num === 3 ? 'flex' : 'none';
+    document.getElementById('cal4').style.display = num === 4 ? 'flex' : 'none';
+  }
+  function switchTab(id, el, prefix) {
+    var parent = document.getElementById('week' + (prefix === 'w3' ? '3' : '4'));
+    parent.querySelectorAll('.tab-content').forEach(function(e){ e.classList.remove('active'); });
+    parent.querySelectorAll('.tab').forEach(function(e){ e.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.ws-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var num = this.getAttribute('data-week');
+        switchWeek(parseInt(num), this);
+      });
+    });
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var id = this.getAttribute('data-id');
+        var prefix = this.getAttribute('data-prefix');
+        switchTab(id, this, prefix);
+      });
+    });
+  });
+</script>
+</body>
+</html>
